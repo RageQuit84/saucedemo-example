@@ -3,7 +3,7 @@ name: Playwright tests
 on:
   push:
     branches: [ main ]
-  workflow_dispatch: {}
+  workflow_dispatch:
 
 jobs:
   test:
@@ -24,7 +24,7 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
-      - name: Debug: list repository files
+      - name: "Debug: list repository files"
         run: |
           pwd
           echo "--- root files ---"
@@ -34,7 +34,7 @@ jobs:
           node -v
           npm -v
 
-      - name: Debug: list Playwright-detected tests
+      - name: "Debug: list Playwright-detected tests"
         run: npx playwright test --list > playwright-tests-list.txt || true
 
       - name: Upload test listing
