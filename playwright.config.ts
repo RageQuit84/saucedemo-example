@@ -9,7 +9,7 @@ export default defineConfig({
   fullyParallel: true,
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
-    baseURL: 'https://playwright.dev/',
+    baseURL: 'https://www.saucedemo.com/',
     headless: true,
     viewport: { width: 1280, height: 720 },
     actionTimeout: 10_000,
