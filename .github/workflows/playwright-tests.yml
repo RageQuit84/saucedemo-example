@@ -24,26 +24,6 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
-      - name: "Debug: list repository files"
-        run: |
-          pwd
-          echo "--- root files ---"
-          ls -la
-          echo "--- tests dir ---"
-          ls -la tests || true
-          node -v
-          npm -v
-
-      - name: "Debug: list Playwright-detected tests"
-        run: npx playwright test --list > playwright-tests-list.txt || true
-
-      - name: Upload test listing
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-test-listing
-          path: playwright-tests-list.txt
-
       - name: Run tests
         run: npm test
 
