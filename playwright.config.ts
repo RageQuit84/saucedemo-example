@@ -18,39 +18,36 @@ export default defineConfig({
     video: 'retain-on-failure'
   },
   projects: [
-    // Setup project that runs once to authenticate
-    { name: 'setup', testMatch: /auth\.setup\.ts/, use: { ...devices['Desktop Chrome'] } },
+    // Setup project(s) that runs once e.g. authentication, seeding, etc. and stores state for dependent projects to consume
+    { name: 'setup', testDir: './src/setup', testMatch: /.*\.setup\.ts/, use: { ...devices['Desktop Chrome'] } },
     
-    // Chromium - purchase and shopping tests with stored authentication
+    // Chromium - all test spec files with stored authentication
     { 
       name: 'chromium', 
       use: { 
         ...devices['Desktop Chrome'],
         storageState: '.auth/standard_user.json'
       },
-      testMatch: /purchase\.spec\.ts|shopping\.spec\.ts/,
       dependencies: ['setup']
     },
     
-    // Firefox - purchase and shopping tests with stored authentication
+    // Firefox - all test spec files with stored authentication
     { 
       name: 'firefox', 
       use: { 
         ...devices['Desktop Firefox'],
         storageState: '.auth/standard_user.json'
       },
-      testMatch: /purchase\.spec\.ts|shopping\.spec\.ts/,
       dependencies: ['setup']
     },
     
-    // WebKit - purchase and shopping tests with stored authentication
+    // WebKit - all test spec files with stored authentication
     { 
       name: 'webkit', 
       use: { 
         ...devices['Desktop Safari'],
         storageState: '.auth/standard_user.json'
       },
-      testMatch: /purchase\.spec\.ts|shopping\.spec\.ts/,
       dependencies: ['setup']
     }
   ]

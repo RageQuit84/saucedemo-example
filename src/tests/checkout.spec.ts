@@ -3,7 +3,7 @@ import { ProductsPage } from '../pages/ProductsPage';
 import { CartPage } from '../pages/CartPage';
 import { CheckoutPage } from '../pages/CheckoutPage';
 
-test.describe('Sauce Demo — Standard User Shopping Scenarios', () => {
+test.describe('Sauce Demo — Checkout & Pricing', () => {
   let products: ProductsPage;
   let cart: CartPage;
   let checkout: CheckoutPage;
@@ -14,127 +14,6 @@ test.describe('Sauce Demo — Standard User Shopping Scenarios', () => {
     checkout = new CheckoutPage(page);
     // Navigate to products page (already authenticated via session storage)
     await page.goto('/inventory.html');
-  });
-
-  test('standard_user can add single item and continue shopping', async ({ page }) => {
-    // Session is already authenticated via storageState
-    
-    // Step 1: Verify products page is loaded
-    await test.step('verify products page loaded', async () => {
-      await expect(products.productsTitle).toHaveText(products.expectedTitle);
-      await expect(products.inventoryList).toBeVisible();
-    });
-
-    // Step 2: Add single product to cart
-    await test.step('add first product to cart', async () => {
-      await products.addFirstProductToCart();
-      const cartCount = await products.getCartBadgeCount();
-      expect(cartCount).toBe('1');
-    });
-
-    // Step 3: Navigate to cart
-    await test.step('navigate to cart', async () => {
-      await products.goToCart();
-      await expect(cart.pageTitle).toContainText('Cart');
-    });
-
-    // Step 4: Verify single item in cart
-    await test.step('verify single item in cart', async () => {
-      const itemCount = await cart.getCartItemCount();
-      expect(itemCount).toBe(1);
-    });
-
-    // Step 5: Continue shopping
-    await test.step('continue shopping', async () => {
-      await expect(cart.continueShoppingButton).toBeVisible();
-      await cart.continueShopping();
-      // Verify we're back on products page
-      await expect(products.productsTitle).toHaveText(products.expectedTitle);
-    });
-  });
-
-  test('standard_user can verify products are displayed correctly', async ({ page }) => {
-    // Session is already authenticated via storageState
-    
-    // Step 1: Verify products page is loaded
-    await test.step('verify products page has items', async () => {
-      await expect(products.productsTitle).toHaveText(products.expectedTitle);
-      await expect(products.inventoryList).toBeVisible();
-    });
-
-    // Step 2: Verify first product details
-    await test.step('verify first product is visible', async () => {
-      await expect(products.firstProductImage).toBeVisible();
-      await expect(products.firstProductName).toBeVisible();
-      const imageSrc = await products.firstProductImageSrc();
-      expect(imageSrc).toContain(products.expectedFirstProductImageSrcToken);
-    });
-
-    // Step 3: Test layout constraints
-    await test.step('verify product layout', async () => {
-      await products.assertFirstProductLayoutConstraints();
-    });
-  });
-
-  test('standard_user can remove item from cart and verify persistence', async ({ page }) => {
-    // Session is already authenticated via storageState
-    
-    // Step 1: Add two products to cart
-    await test.step('add two products to cart', async () => {
-      await products.addFirstProductToCart();
-      const count1 = await products.getCartBadgeCount();
-      expect(count1).toBe('1');
-      
-      await products.addSecondProductToCart();
-      const count2 = await products.getCartBadgeCount();
-      expect(count2).toBe('2');
-    });
-
-    // Step 2: Navigate to cart
-    await test.step('navigate to cart', async () => {
-      await products.goToCart();
-      await expect(cart.pageTitle).toContainText('Cart');
-    });
-
-    // Step 3: Verify both items in cart
-    await test.step('verify two items in cart', async () => {
-      const itemCount = await cart.getCartItemCount();
-      expect(itemCount).toBe(2);
-    });
-
-    // Step 4: Remove the second item from cart
-    await test.step('remove second item from cart', async () => {
-      const itemsBefore = await cart.getCartItemCount();
-      expect(itemsBefore).toBe(2);
-      
-      // Remove the first displayed item (which is the second added item)
-      await cart.removeItemByIndex(0);
-      
-      const itemsAfter = await cart.getCartItemCount();
-      expect(itemsAfter).toBe(1);
-    });
-
-    // Step 5: Continue shopping
-    await test.step('continue shopping', async () => {
-      await expect(cart.continueShoppingButton).toBeVisible();
-      await cart.continueShopping();
-      await expect(products.productsTitle).toHaveText(products.expectedTitle);
-    });
-
-    // Step 6: Verify cart badge decreased
-    await test.step('verify cart badge shows one item', async () => {
-      const cartCount = await products.getCartBadgeCount();
-      expect(cartCount).toBe('1');
-    });
-
-    // Step 7: Navigate back to cart to verify removal persists
-    await test.step('verify removed item stays removed', async () => {
-      await products.goToCart();
-      await expect(cart.pageTitle).toContainText('Cart');
-      
-      const finalItemCount = await cart.getCartItemCount();
-      expect(finalItemCount).toBe(1);
-    });
   });
 
   test('standard_user can verify checkout pricing before completing purchase', async ({ page }) => {
@@ -160,13 +39,13 @@ test.describe('Sauce Demo — Standard User Shopping Scenarios', () => {
       expect(cartCount).toBe(itemsWithPrices.length.toString());
     });
 
-    // Step 3: Verify cart item prices match product prices
+    // Step 2: Navigate to cart
     await test.step('navigate to cart and verify', async () => {
       await products.goToCart();
       await expect(cart.pageTitle).toContainText('Cart');
     });
 
-    // Step 4: Verify all items in cart
+    // Step 3: Verify all items in cart
     await test.step('verify items in cart match products', async () => {
       const itemCountInCart = await cart.getCartItemCount();
       expect(itemCountInCart).toBe(itemsWithPrices.length);
@@ -182,20 +61,20 @@ test.describe('Sauce Demo — Standard User Shopping Scenarios', () => {
       console.log(`Expected subtotal: $${expectedSubtotal.toFixed(2)}`);
     });
 
-    // Step 5: Proceed to checkout
+    // Step 4: Proceed to checkout
     await test.step('proceed to checkout', async () => {
       await expect(cart.checkoutButton).toBeVisible();
       await cart.proceedToCheckout();
     });
 
-    // Step 6: Fill in checkout information
+    // Step 5: Fill in checkout information
     await test.step('fill checkout info', async () => {
       await expect(checkout.firstNameInput).toBeVisible();
       await checkout.fillCheckoutInfo('John', 'Doe', '12345');
       await checkout.continueCheckout();
     });
 
-    // Step 7: Verify pricing on checkout review page
+    // Step 6: Verify pricing on checkout review page
     await test.step('verify pricing on checkout review', async () => {
       // Verify page title shows Checkout
       await expect(checkout.pageTitle).toContainText('Checkout');
@@ -216,14 +95,14 @@ test.describe('Sauce Demo — Standard User Shopping Scenarios', () => {
       expect(Math.round(checkoutTotal * 100) / 100).toBeCloseTo(Math.round(calculatedTotal * 100) / 100, 2);
     });
 
-    // Step 8: Navigate back without completing purchase
+    // Step 7: Navigate back without completing purchase
     await test.step('navigate back without completing purchase', async () => {
       await checkout.navigateBackToCart();
       // Cancel button takes us back to products page
       await expect(products.productsTitle).toHaveText(products.expectedTitle);
     });
 
-    // Step 9: Verify items are still in cart by navigating back to cart
+    // Step 8: Verify items are still in cart by navigating back to cart
     await test.step('verify items remain in cart', async () => {
       await products.goToCart();
       await expect(cart.pageTitle).toContainText('Cart');
@@ -271,7 +150,6 @@ test.describe('Sauce Demo — Standard User Shopping Scenarios', () => {
         } else {
           await expect(cart.pageTitle).toHaveText('Cart');
         }
-      } else {
         // Button should be disabled
         expect(isCheckoutEnabled).toBeFalsy();
       }
